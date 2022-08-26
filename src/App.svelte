@@ -2,8 +2,9 @@
   import svelteLogo from "./assets/svelte.svg";
   import Counter from "./lib/Counter.svelte";
   import { createPopperActions } from "svelte-popperjs";
+  import { writable } from "svelte/store";
 
-  const [ref, content, getInstance] = createPopperActions();
+  const [ref, content] = createPopperActions();
 
   const mousemove = (ev: MouseEvent) => {
     x = ev.clientX;
@@ -20,13 +21,9 @@
       bottom: y,
       left: x,
     } as DOMRect);
-  let virtualElement = { getBoundingClientRect };
 
-  // reassign getBoundingClientRect whenever it updates and update the instance.
-  // notice the comma (,) not semicolon (;) after the assignment.
-  $: (virtualElement.getBoundingClientRect = getBoundingClientRect),
-    getInstance()?.update();
-
+  const virtualElement = writable({ getBoundingClientRect });
+  $: $virtualElement = { getBoundingClientRect };
   ref(virtualElement);
 </script>
 
